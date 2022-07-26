@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         Headcount
 // @namespace    https://osu.ppy.sh/
-// @version      1.1
+// @version      1.2
 // @updateURL    https://raw.githubusercontent.com/tilda/userscripts/main/headcount/headcount.user.js
 // @downloadURL  https://raw.githubusercontent.com/tilda/userscripts/main/headcount/headcount.user.js
+// @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @description  Count & percentage of mutual friends on osu-web's friends page
 // @author       tilda
 // @match        https://osu.ppy.sh/home/friends
@@ -12,9 +13,34 @@
 // @grant        none
 // ==/UserScript==
 
+GM_config.init({
+    'id': 'headcount_config',
+    'title': 'Headcount Settings',
+    'fields': {
+        'displayType': {
+            'label': 'Display type',
+            'type': 'radio',
+            'options': ['icon', 'text', 'none'],
+            'default': 'icon'
+        }
+    }
+})
+
 let friendsPageRoot = document.getElementsByClassName('js-react--friends-index')[0]
 const percentage = function(partial, total) {
     return ((100 * partial) / total).toFixed(2)
+}
+
+// ngl i hate this
+const getIconPreference = function() {
+    if (GM_config.get('displayType') === 'icon') {
+        return '<span class="fas fa-user-friends"></span>'
+    } else { return '' }
+}
+const getTextPreference = function() {
+    if (GM_config.get('displayType') === 'text') {
+        return 'mutuals'
+    } else { return '' }
 }
 
 const setupMutualCounter = function() {
@@ -24,15 +50,17 @@ const setupMutualCounter = function() {
     const toolbarRow = body.getElementsByClassName("user-list__toolbar-row")[0]
     const toolbarItem = document.createElement('div')
     const spacing = document.createElement('div')
-    const toolbarItemContent = document.createTextNode(`${mutualFriends}/${addedFriends} mutuals (${percentage(mutualFriends, addedFriends)}%)`)
 
     toolbarRow.style = 'align-items: center;'
 
     spacing.classList.add('user-list__toolbar-item')
     spacing.style = 'margin: auto;'
-    toolbarItem.appendChild(toolbarItemContent)
     toolbarItem.classList.add('user-list__toolbar-item')
-    toolbarItem.style = 'padding: 0; font-size: 20px; font-weight: bold; margin: 5px;'
+    toolbarItem.style = 'padding: 0; font-size: 20px; font-weight: bold; margin: 5px; cursor: pointer;'
+    toolbarItem.innerHTML = `${getIconPreference()} ${mutualFriends}/${addedFriends} ${getTextPreference()} (${percentage(mutualFriends, addedFriends)}%)`
+    toolbarItem.addEventListener('click', () => {
+        GM_config.open()
+    })
 
     const firstElementChild = toolbarRow.firstElementChild
     toolbarRow.insertBefore(toolbarItem, firstElementChild)
