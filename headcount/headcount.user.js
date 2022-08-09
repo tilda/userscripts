@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Headcount
 // @namespace    https://osu.ppy.sh/
-// @version      1.2
+// @version      1.2.1
 // @updateURL    https://raw.githubusercontent.com/tilda/userscripts/main/headcount/headcount.user.js
 // @downloadURL  https://raw.githubusercontent.com/tilda/userscripts/main/headcount/headcount.user.js
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
@@ -31,16 +31,17 @@ const percentage = function(partial, total) {
     return ((100 * partial) / total).toFixed(2)
 }
 
-// ngl i hate this
-const getIconPreference = function() {
-    if (GM_config.get('displayType') === 'icon') {
-        return '<span class="fas fa-user-friends"></span>'
-    } else { return '' }
-}
-const getTextPreference = function() {
-    if (GM_config.get('displayType') === 'text') {
-        return 'mutuals'
-    } else { return '' }
+const getMutualCounterHTML = function(mutual, added) {
+    let friends = `${mutual}/${added}`
+    let mutualPercent = percentage(mutual, added) + '%'
+    switch (GM_config.get('displayType')) {
+        case 'icon':
+            return `<span class="fas fa-user-friends"></span> ${friends} (${mutualPercent})`
+        case 'text':
+            return `${friends} mutuals (${mutualPercent})`
+        default:
+            return `${friends} (${mutualPercent})`
+    }
 }
 
 const setupMutualCounter = function() {
@@ -57,7 +58,7 @@ const setupMutualCounter = function() {
     spacing.style = 'margin: auto;'
     toolbarItem.classList.add('user-list__toolbar-item')
     toolbarItem.style = 'padding: 0; font-size: 20px; font-weight: bold; margin: 5px; cursor: pointer;'
-    toolbarItem.innerHTML = `${getIconPreference()} ${mutualFriends}/${addedFriends} ${getTextPreference()} (${percentage(mutualFriends, addedFriends)}%)`
+    toolbarItem.innerHTML = getMutualCounterHTML(mutualFriends, addedFriends)
     toolbarItem.addEventListener('click', () => {
         GM_config.open()
     })
