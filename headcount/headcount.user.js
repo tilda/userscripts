@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Headcount
 // @namespace    https://osu.ppy.sh/
-// @version      1.2.1
+// @version      1.2.2
 // @updateURL    https://raw.githubusercontent.com/tilda/userscripts/main/headcount/headcount.user.js
 // @downloadURL  https://raw.githubusercontent.com/tilda/userscripts/main/headcount/headcount.user.js
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
@@ -20,7 +20,7 @@ GM_config.init({
         'displayType': {
             'label': 'Display type',
             'type': 'radio',
-            'options': ['icon', 'text', 'none'],
+            'options': ['iconwithtext', 'icon', 'text', 'none'],
             'default': 'icon'
         }
     }
@@ -35,6 +35,8 @@ const getMutualCounterHTML = function(mutual, added) {
     let friends = `${mutual}/${added}`
     let mutualPercent = percentage(mutual, added) + '%'
     switch (GM_config.get('displayType')) {
+        case 'iconwithtext':
+            return `<span class="fas fa-user-friends"></span> ${friends} mutuals (${mutualPercent})`
         case 'icon':
             return `<span class="fas fa-user-friends"></span> ${friends} (${mutualPercent})`
         case 'text':
