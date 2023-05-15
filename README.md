@@ -9,5 +9,10 @@ A decently hacky script for the osu! website that shows the amount of mutual fri
 
 ![](static/msedge_sEVq7XHrjX.png)
 
+# [Flutterby](https://github.com/tilda/userscripts/raw/main/flutterby/flutterby.user.js)
+A very simple script for the "Uta-Net" website that allows you to copy & select text from it, as well as use your browser context menu. JavaScript was a mistake.
+
+There is no screenshot needed for this one.
+
 # License
 MIT License
